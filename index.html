@@ -1,130 +1,150 @@
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
-<meta charset="utf-8"/>
-<title>Directrices por Año - Ecopetrol</title>
-<style>
-<style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background-image: url('https://ecopetrol.sharepoint.com/sites/DirectricesExogena/Documentos%20compartidos/fondo_ecopetrol.jpg'); /* Mantiene tu fondo corporativo */
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            color: #000;
-        }
-        h1 {
-            color: #004884;
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-        }
-        select, button {
-            padding: 10px;
-            margin: 10px 0;
-            width: 100%;
-            font-size: 16px;
-        }
-        #respuesta {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: rgba(255, 255, 255, 0.9);
-            border: 1px solid #ccc;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Directrices Exógenas - Ecopetrol</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-image: url('https://ecopetrol.sharepoint.com/sites/DirectricesExogena/Documentos%20compartidos/fondo_ecopetrol.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      color: #000;
+    }
+    .container {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 900px;
+      margin: auto;
+    }
+    h2 {
+      color: #006341;
+    }
+    select, button {
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      font-size: 16px;
+    }
+    .respuesta {
+      margin-top: 30px;
+      background-color: #fff8c6;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #ffd100;
+    }
+    .respuesta h3 {
+      margin-top: 0;
+      color: #007a33;
+    }
+    .respuesta ul {
+      padding-left: 20px;
+    }
+    .correo {
+      margin-top: 30px;
+      text-align: center;
+    }
+    .correo button {
+      background-color: #FFD100;
+      border: none;
+      color: #000;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .correo button:hover {
+      background-color: #FFEB66;
+    }
+  </style>
 </head>
 <body>
-<h1>Directrices por Año</h1>
-<label for="tema">Selecciona un tema:</label>
-<select id="tema">
-<option value="">-- Selecciona un tema --</option>
-</select>
-<label for="pregunta">Selecciona una pregunta:</label>
-<select id="pregunta">
-<option value="">-- Selecciona una pregunta --</option>
-</select>
-<div class="respuesta" id="respuesta">
-<p>Selecciona un tema y una pregunta para ver la respuesta por año.</p>
-</div>
-<script>
-        let datos = [];
+  <div class="container">
+    <h2>Consulta de Directrices Exógenas</h2>
+    <label for="tema">Tema:</label>
+    <select id="tema">
+      <option value="">-- Selecciona un tema --</option>
+    </select>
+    <label for="pregunta">Pregunta:</label>
+    <select id="pregunta">
+      <option value="">-- Selecciona una pregunta --</option>
+    </select>
+    <div class="respuesta" id="respuesta"></div>
+    <div class="correo">
+      <button onclick="elevarConsulta()">No encontré mi pregunta, elevar consulta</button>
+    </div>
+  </div>
 
-        fetch('directrices.json')
-            .then(response => response.json())
-            .then(json => {
-                datos = json;
+  <script>
+    let data = [];
 
-                const temas = [...new Set(datos.map(d => d.tema))];
-                const temaSelect = document.getElementById('tema');
-                temas.forEach(tema => {
-                    const option = document.createElement('option');
-                    option.value = tema;
-                    option.textContent = tema;
-                    temaSelect.appendChild(option);
-                });
-
-                temaSelect.addEventListener('change', () => {
-                    const preguntas = datos.filter(d => d.tema === temaSelect.value).map(d => d.pregunta);
-                    const preguntaSelect = document.getElementById('pregunta');
-                    preguntaSelect.innerHTML = '<option value="">-- Selecciona una pregunta --</option>';
-                    preguntas.forEach(pregunta => {
-                        const option = document.createElement('option');
-                        option.value = pregunta;
-                        option.textContent = pregunta;
-                        preguntaSelect.appendChild(option);
-                    });
-                    document.getElementById('respuesta').innerHTML = '<p>Selecciona una pregunta para ver la respuesta por año.</p>';
-                });
-
-                document.getElementById('pregunta').addEventListener('change', () => {
-                    const seleccion = datos.find(d => d.tema === temaSelect.value && d.pregunta === document.getElementById('pregunta').value);
-                    if (seleccion) {
-                        let html = `<h3>Respuestas por Año</h3>`;
-                        for (const [anio, respuesta] of Object.entries(seleccion.respuestas_por_anio)) {
-                            if (respuesta && respuesta.trim() !== '') {
-                                html += `<div class="anio"><strong>${anio}:</strong> ${respuesta}</div>`;
-                            }
-                        }
-                        if (seleccion.directriz_corporativa) {
-                            html += `<div><strong>Directriz Corporativa:</strong> ${seleccion.directriz_corporativa}</div>`;
-                        }
-                        if (seleccion.link) {
-                            html += `<div class="link"><a href="${seleccion.link}" target="_blank">Ver documento de soporte</a></div>`;
-                        }
-                        document.getElementById('respuesta').innerHTML = html;
-                    } else {
-                        document.getElementById('respuesta').innerHTML = '<p>No se encontró respuesta para esta pregunta.</p>';
-                    }
-                });
-            })
-            .catch(error => {
-                console.error('Error al cargar el archivo JSON:', error);
-                document.getElementById('respuesta').innerHTML = '<p>Error al cargar las directrices.</p>';
-            });
-    </script>
-<button id="btnCorreo" style="margin-top: 20px;">No encontré mi pregunta, elevar consulta</button><script>
-document.getElementById("btnCorreo").addEventListener("click", function () {
-    const asunto = encodeURIComponent("Consulta sobre directrices exógenas-Tema");
-    const cuerpo = encodeURIComponent("No encontré mi pregunta en el chat. Por favor, ayúdenme con esta consulta.");
-    const para = "walter.castro@ecopetrol.com.co,adalbert.palacios@ecopetrol.com.co";
-    const cc = "sandra.bulla@ecopetrol.com.co,diana.espinosa@ecopetrol.com.co,jennyca.rodriguez@ecopetrol.com.co";
-    window.location.href = `mailto:${para}?cc=${cc}&subject=${asunto}&body=${cuerpo}`;
-});
-</script></body>
-</html>
-
-
-        document.getElementById('pregunta').addEventListener('change', function() {
-            const respuestaDiv = document.getElementById('respuesta');
-            const preguntaSeleccionada = this.value;
-            respuestaDiv.innerHTML = '<strong>Pregunta seleccionada:</strong> ' + preguntaSeleccionada;
+    fetch('directrices_por_anio.json')
+      .then(response => response.json())
+      .then(json => {
+        data = json;
+        const temasUnicos = [...new Set(data.map(d => d.Tema))];
+        const temaSelect = document.getElementById("tema");
+        temasUnicos.forEach(tema => {
+          const option = document.createElement("option");
+          option.value = tema;
+          option.textContent = tema;
+          temaSelect.appendChild(option);
         });
+      })
+      .catch(error => {
+        document.getElementById("respuesta").textContent = "Error al cargar las directrices.";
+        console.error(error);
+      });
 
-        function elevarConsulta() {
-            const mailto = "mailto:walter.castro@ecopetrol.com.co?cc=adalbert.palacios@ecopetrol.com.co,sandra.bulla@ecopetrol.com.co,diana.espinosa@ecopetrol.com.co,jennyca.rodriguez@ecopetrol.com.co&subject=Consulta Directriz Exógena&body=No encontré mi pregunta en el chatbot. Por favor ayúdame.";
-            window.location.href = mailto;
+    document.getElementById("tema").addEventListener("change", function () {
+      const tema = this.value;
+      const preguntaSelect = document.getElementById("pregunta");
+      preguntaSelect.innerHTML = '<option value="">-- Selecciona una pregunta --</option>';
+      const preguntasFiltradas = data.filter(d => d.Tema === tema);
+      [...new Set(preguntasFiltradas.map(d => d.Pregunta))].forEach(pregunta => {
+        const option = document.createElement("option");
+        option.value = pregunta;
+        option.textContent = pregunta;
+        preguntaSelect.appendChild(option);
+      });
+      document.getElementById("respuesta").innerHTML = "";
+    });
+
+    document.getElementById("pregunta").addEventListener("change", function () {
+      const tema = document.getElementById("tema").value;
+      const pregunta = this.value;
+      const resultado = data.find(d => d.Tema === tema && d.Pregunta === pregunta);
+      const respuestaDiv = document.getElementById("respuesta");
+      if (resultado) {
+        let html = "<h3>Respuesta por año:</h3><ul>";
+        for (let año of ["Año 2021", "Año 2022", "Año 2023", "Año 2024", "Año 2025"]) {
+          if (resultado[año]) {
+            html += `<li><strong>${año}:</strong> ${resultado[año]}</li>`;
+          }
         }
-    </script>
+        html += "</ul>";
+        if (resultado["Directriz Corporativa"]) {
+          html += `<p><strong>Directriz Corporativa:</strong><br>${resultado["Directriz Corporativa"]}</p>`;
+        }
+        if (resultado["Link"]) {
+          html += `<p><strong>Link de soporte:</strong> ${resultado[Ver documento</a></p>`;
+        }
+        respuestaDiv.innerHTML = html;
+      } else {
+        respuestaDiv.textContent = "No se encontró respuesta.";
+      }
+    });
+
+    function elevarConsulta() {
+      const asunto = encodeURIComponent("Consulta sobre directrices exógenas");
+      const cuerpo = encodeURIComponent("No encontré mi pregunta en el chat. Por favor, ayúdenme con esta consulta.");
+      const para = "walter.castro@ecopetrol.com.co,adalbert.palacios@ecopetrol.com.co";
+      const cc = "sandra.bulla@ecopetrol.com.co,diana.espinosa@ecopetrol.com.co,jennyca.rodriguez@ecopetrol.com.co";
+      window.location.href = `mailto:${para}?cc=${cc}&subject=${asunto}&body=${cuerpo}`;
+    }
+  </script>
 </body>
 </html>
