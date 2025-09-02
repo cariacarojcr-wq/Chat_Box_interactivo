@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Chatbox Directrices</title>
-    <style>
+<meta charset="utf-8"/>
+<title>Chatbox Directrices</title>
+<style>
         body {
             font-family: Arial, sans-serif;
             margin: 40px;
@@ -33,23 +34,18 @@
     </style>
 </head>
 <body>
-    <h1>Chatbox Directrices Ecopetrol</h1>
-
-    <label for="tema">¿Sobre qué tema quieres preguntar?</label>
-    <select id="tema">
-        <option value="">-- Selecciona un tema --</option>
-    </select>
-
-    <label for="pregunta">Selecciona la pregunta</label>
-    <select id="pregunta">
-        <option value="">-- Selecciona una pregunta --</option>
-    </select>
-
-    <button onclick="elevarConsulta()">No encontré mi pregunta, elevar consulta</button>
-
-    <div id="respuesta"></div>
-
-    <script>
+<h1>Chatbox Directrices Ecopetrol</h1>
+<label for="tema">¿Sobre qué tema quieres preguntar?</label>
+<select id="tema">
+<option value="">-- Selecciona un tema --</option>
+</select>
+<label for="pregunta">Selecciona la pregunta</label>
+<select id="pregunta">
+<option value="">-- Selecciona una pregunta --</option>
+</select>
+<button onclick="elevarConsulta()">No encontré mi pregunta, elevar consulta</button>
+<div id="respuesta"></div>
+<script>
         let datos = {};
 
         fetch('directrices.json')
