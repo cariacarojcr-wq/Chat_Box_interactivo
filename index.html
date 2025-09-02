@@ -125,3 +125,43 @@ fetch('directrices.json')
 </script>
 
 </body></html>
+<script>
+let datos = {};
+
+fetch('directrices.json')
+    .then(response => response.json())
+    .then(data => {
+        datos = data;
+        const temaSelect = document.getElementById('tema');
+        for (let tema in datos) {
+            let option = document.createElement('option');
+            option.value = tema;
+            option.textContent = tema;
+            temaSelect.appendChild(option);
+        }
+    });
+
+document.getElementById('tema').addEventListener('change', function() {
+    const preguntas = datos[this.value] || [];
+    const preguntaSelect = document.getElementById('pregunta');
+    preguntaSelect.innerHTML = '<option value="">-- Selecciona una pregunta --</option>';
+    preguntas.forEach(p => {
+        let option = document.createElement('option');
+        option.value = p;
+        option.textContent = p;
+        preguntaSelect.appendChild(option);
+    });
+    document.getElementById('respuesta').innerHTML = '';
+});
+
+document.getElementById('pregunta').addEventListener('change', function() {
+    const respuestaDiv = document.getElementById('respuesta');
+    respuestaDiv.innerHTML = '<strong>Respuesta:</strong> Esta funcionalidad está en desarrollo. Pronto verás la respuesta aquí.';
+});
+
+function elevarConsulta() {
+    alert('Tu consulta será elevada al equipo correspondiente.');
+}
+</script>
+
+
