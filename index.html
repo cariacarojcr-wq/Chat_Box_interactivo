@@ -83,17 +83,10 @@
             respuestaDiv.innerHTML = '<strong>Respuesta:</strong> Esta funcionalidad está en desarrollo. Pronto verás la respuesta aquí.';
         });
 
-
- } else {
-        container.innerHTML = '';
-    }
-}
-
-function elevarConsulta() {
-    const mailto = "mailto:walter.castro@ecopetrol.com.co?cc=adalbert.palacios@ecopetrol.com.co;sandra.bulla@ecopetrol.com.co;diana.espinosa@ecopetrol.com.co;jennyca.rodriguez@ecopetrol.com.co&subject=Consulta Directriz Exógena&body=No encontré mi pregunta en el chatbot. Por favor ayúdame.";
-    window.location.href = mailto;
-}
-
-window.onload = loadTemas;
-</script>
-</body></html>
+        function elevarConsulta() {
+            const mailto = "mailto:walter.castro@ecopetrol.com.co?cc=adalbert.palacios@ecopetrol.com.co,sandra.bulla@ecopetrol.com.co,diana.espinosa@ecopetrol.com.co,jennyca.rodriguez@ecopetrol.com.co&subject=Consulta Directriz Exógena&body=No encontré mi pregunta en el chatbot. Por favor ayúdame.";
+            window.location.href = mailto;
+        }
+    </script>
+</body>
+</html>
