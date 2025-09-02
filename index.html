@@ -87,5 +87,62 @@
             alert('Tu consulta será elevada al equipo correspondiente.');
         }
     </script>
+
+<div style="margin-top: 20px;">
+<button onclick="window.location.href='mailto:walter.castro@ecopetrol.com.co,adalbert.palacios@ecopetrol.com.co?cc=sandra.bulla@ecopetrol.com.co,diana.espinosa@ecopetrol.com.co,jennyca.rodriguez@ecopetrol.com.co&amp;subject=Consulta%20sobre%20Directrices%20Ex%C3%B3genas&amp;body=Por%20favor%20describa%20su%20consulta%20aquí.'">
+        No encontré mi pregunta, elevar consulta
+    </button>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const temaSelect = document.getElementById("tema");
+    const preguntaSelect = document.getElementById("pregunta");
+    const respuestaDiv = document.getElementById("respuesta");
+
+    fetch("directrices.json")
+        .then(response => response.text())
+        .then(text => {
+            const lines = text.split("\n").filter(line => line.trim() !== "");
+            const data = lines.map(line => {
+                const [tema, pregunta, ...resto] = line.split("?");
+                return {
+                    tema: tema.trim(),
+                    pregunta: pregunta.trim(),
+                    respuesta: resto.join("?").trim()
+                };
+            });
+
+            const temasUnicos = [...new Set(data.map(d => d.tema))];
+            temasUnicos.forEach(tema => {
+                const option = document.createElement("option");
+                option.value = tema;
+                option.textContent = tema;
+                temaSelect.appendChild(option);
+            });
+
+            temaSelect.addEventListener("change", function () {
+                preguntaSelect.innerHTML = '<option value="">-- Selecciona una pregunta --</option>';
+                const preguntasFiltradas = data.filter(d => d.tema === temaSelect.value);
+                preguntasFiltradas.forEach(d => {
+                    const option = document.createElement("option");
+                    option.value = d.pregunta;
+                    option.textContent = d.pregunta;
+                    preguntaSelect.appendChild(option);
+                });
+                respuestaDiv.textContent = "";
+            });
+
+            preguntaSelect.addEventListener("change", function () {
+                const seleccion = data.find(d => d.tema === temaSelect.value && d.pregunta === preguntaSelect.value);
+                respuestaDiv.textContent = seleccion ? seleccion.respuesta : "No se encontró respuesta.";
+            });
+        })
+        .catch(error => {
+            console.error("Error al cargar el archivo JSON:", error);
+            respuestaDiv.textContent = "No se pudo cargar la información.";
+        });
+});
+</script>
 </body>
 </html>
