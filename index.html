@@ -83,13 +83,7 @@
             alert('Tu consulta será elevada al equipo correspondiente.');
         }
     </script>
-
-<div style="margin-top: 20px;">
-<button onclick="window.location.href='mailto:walter.castro@ecopetrol.com.co,adalbert.palacios@ecopetrol.com.co?cc=sandra.bulla@ecopetrol.com.co,diana.espinosa@ecopetrol.com.co,jennyca.rodriguez@ecopetrol.com.co&amp;subject=Consulta%20sobre%20Directrices%20Ex%C3%B3genas&amp;body=Por%20favor%20describa%20su%20consulta%20aquí.'">
-        No encontré mi pregunta, elevar consulta
-    </button>
-</div>
-
+<button id="btnCorreo">No encontré mi pregunta, elevar consulta</button>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const temaSelect = document.getElementById("tema");
@@ -138,6 +132,14 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error al cargar el archivo JSON:", error);
             respuestaDiv.textContent = "No se pudo cargar la información.";
         });
+
+    document.getElementById("btnCorreo").addEventListener("click", function () {
+        const asunto = encodeURIComponent("Consulta sobre directrices exógenas");
+        const cuerpo = encodeURIComponent("No encontré mi pregunta en el chat. Por favor, ayúdenme con esta consulta.");
+        const para = "walter.castro@ecopetrol.com.co,adalbert.palacios@ecopetrol.com.co";
+        const cc = "sandra.bulla@ecopetrol.com.co,diana.espinosa@ecopetrol.com.co,jennyca.rodriguez@ecopetrol.com.co";
+        window.location.href = `mailto:${para}?cc=${cc}&subject=${asunto}&body=${cuerpo}`;
+    });
 });
 </script>
 </body>
