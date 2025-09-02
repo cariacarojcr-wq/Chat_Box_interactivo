@@ -3,7 +3,8 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"/>
-<title>Chatbox Directrices</title>
+<title>Directrices por Año - Ecopetrol</title>
+<style>
 <style>
         body {
             font-family: Arial, sans-serif;
@@ -34,113 +35,96 @@
     </style>
 </head>
 <body>
-<h1>Chatbox Directrices Ecopetrol</h1>
-<label for="tema">¿Sobre qué tema quieres preguntar?</label>
+<h1>Directrices por Año</h1>
+<label for="tema">Selecciona un tema:</label>
 <select id="tema">
 <option value="">-- Selecciona un tema --</option>
 </select>
-<label for="pregunta">Selecciona la pregunta</label>
+<label for="pregunta">Selecciona una pregunta:</label>
 <select id="pregunta">
 <option value="">-- Selecciona una pregunta --</option>
 </select>
-<button onclick="elevarConsulta()">No encontré mi pregunta, elevar consulta</button>
-<div id="respuesta"></div>
+<div class="respuesta" id="respuesta">
+<p>Selecciona un tema y una pregunta para ver la respuesta por año.</p>
+</div>
 <script>
-        let datos = {};
+        let datos = [];
 
-        fetch('directrices.json')
+        fetch('directrices_por_anio.json')
             .then(response => response.json())
-            .then(data => {
-                datos = data;
+            .then(json => {
+                datos = json;
+
+                const temas = [...new Set(datos.map(d => d.tema))];
                 const temaSelect = document.getElementById('tema');
-                for (let tema in datos) {
-                    let option = document.createElement('option');
+                temas.forEach(tema => {
+                    const option = document.createElement('option');
                     option.value = tema;
                     option.textContent = tema;
                     temaSelect.appendChild(option);
-                }
-            });
+                });
 
-        document.getElementById('tema').addEventListener('change', function() {
-            const preguntas = datos[this.value] || [];
-            const preguntaSelect = document.getElementById('pregunta');
-            preguntaSelect.innerHTML = '<option value="">-- Selecciona una pregunta --</option>';
-            preguntas.forEach(p => {
-                let option = document.createElement('option');
-                option.value = p;
-                option.textContent = p;
-                preguntaSelect.appendChild(option);
+                temaSelect.addEventListener('change', () => {
+                    const preguntas = datos.filter(d => d.tema === temaSelect.value).map(d => d.pregunta);
+                    const preguntaSelect = document.getElementById('pregunta');
+                    preguntaSelect.innerHTML = '<option value="">-- Selecciona una pregunta --</option>';
+                    preguntas.forEach(pregunta => {
+                        const option = document.createElement('option');
+                        option.value = pregunta;
+                        option.textContent = pregunta;
+                        preguntaSelect.appendChild(option);
+                    });
+                    document.getElementById('respuesta').innerHTML = '<p>Selecciona una pregunta para ver la respuesta por año.</p>';
+                });
+
+                document.getElementById('pregunta').addEventListener('change', () => {
+                    const seleccion = datos.find(d => d.tema === temaSelect.value && d.pregunta === document.getElementById('pregunta').value);
+                    if (seleccion) {
+                        let html = `<h3>Respuestas por Año</h3>`;
+                        for (const [anio, respuesta] of Object.entries(seleccion.respuestas_por_anio)) {
+                            if (respuesta && respuesta.trim() !== '') {
+                                html += `<div class="anio"><strong>${anio}:</strong> ${respuesta}</div>`;
+                            }
+                        }
+                        if (seleccion.directriz_corporativa) {
+                            html += `<div><strong>Directriz Corporativa:</strong> ${seleccion.directriz_corporativa}</div>`;
+                        }
+                        if (seleccion.link) {
+                            html += `<div class="link"><a href="${seleccion.link}" target="_blank">Ver documento de soporte</a></div>`;
+                        }
+                        document.getElementById('respuesta').innerHTML = html;
+                    } else {
+                        document.getElementById('respuesta').innerHTML = '<p>No se encontró respuesta para esta pregunta.</p>';
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error al cargar el archivo JSON:', error);
+                document.getElementById('respuesta').innerHTML = '<p>Error al cargar las directrices.</p>';
             });
-            document.getElementById('respuesta').innerHTML = '';
-        });
+    </script>
+<button id="btnCorreo" style="margin-top: 20px;">No encontré mi pregunta, elevar consulta</button><script>
+document.getElementById("btnCorreo").addEventListener("click", function () {
+    const asunto = encodeURIComponent("Consulta sobre directrices exógenas-Tema");
+    const cuerpo = encodeURIComponent("No encontré mi pregunta en el chat. Por favor, ayúdenme con esta consulta.");
+    const para = "walter.castro@ecopetrol.com.co,adalbert.palacios@ecopetrol.com.co";
+    const cc = "sandra.bulla@ecopetrol.com.co,diana.espinosa@ecopetrol.com.co,jennyca.rodriguez@ecopetrol.com.co";
+    window.location.href = `mailto:${para}?cc=${cc}&subject=${asunto}&body=${cuerpo}`;
+});
+</script></body>
+</html>
+
 
         document.getElementById('pregunta').addEventListener('change', function() {
             const respuestaDiv = document.getElementById('respuesta');
-            respuestaDiv.innerHTML = '<strong>Respuesta:</strong> Esta funcionalidad está en desarrollo. Pronto verás la respuesta aquí.';
+            const preguntaSeleccionada = this.value;
+            respuestaDiv.innerHTML = '<strong>Pregunta seleccionada:</strong> ' + preguntaSeleccionada;
         });
 
         function elevarConsulta() {
-            alert('Tu consulta será elevada al equipo correspondiente.');
+            const mailto = "mailto:walter.castro@ecopetrol.com.co?cc=adalbert.palacios@ecopetrol.com.co,sandra.bulla@ecopetrol.com.co,diana.espinosa@ecopetrol.com.co,jennyca.rodriguez@ecopetrol.com.co&subject=Consulta Directriz Exógena&body=No encontré mi pregunta en el chatbot. Por favor ayúdame.";
+            window.location.href = mailto;
         }
     </script>
-<button id="btnCorreo">No encontré mi pregunta, elevar consulta</button>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const temaSelect = document.getElementById("tema");
-    const preguntaSelect = document.getElementById("pregunta");
-    const respuestaDiv = document.getElementById("respuesta");
-
-    fetch("directrices.json")
-        .then(response => response.text())
-        .then(text => {
-            const lines = text.split("\n").filter(line => line.trim() !== "");
-            const data = lines.map(line => {
-                const [tema, pregunta, ...resto] = line.split("?");
-                return {
-                    tema: tema.trim(),
-                    pregunta: pregunta.trim(),
-                    respuesta: resto.join("?").trim()
-                };
-            });
-
-            const temasUnicos = [...new Set(data.map(d => d.tema))];
-            temasUnicos.forEach(tema => {
-                const option = document.createElement("option");
-                option.value = tema;
-                option.textContent = tema;
-                temaSelect.appendChild(option);
-            });
-
-            temaSelect.addEventListener("change", function () {
-                preguntaSelect.innerHTML = '<option value="">-- Selecciona una pregunta --</option>';
-                const preguntasFiltradas = data.filter(d => d.tema === temaSelect.value);
-                preguntasFiltradas.forEach(d => {
-                    const option = document.createElement("option");
-                    option.value = d.pregunta;
-                    option.textContent = d.pregunta;
-                    preguntaSelect.appendChild(option);
-                });
-                respuestaDiv.textContent = "";
-            });
-
-            preguntaSelect.addEventListener("change", function () {
-                const seleccion = data.find(d => d.tema === temaSelect.value && d.pregunta === preguntaSelect.value);
-                respuestaDiv.textContent = seleccion ? seleccion.respuesta : "No se encontró respuesta.";
-            });
-        })
-        .catch(error => {
-            console.error("Error al cargar el archivo JSON:", error);
-            respuestaDiv.textContent = "No se pudo cargar la información.";
-        });
-
-    document.getElementById("btnCorreo").addEventListener("click", function () {
-        const asunto = encodeURIComponent("Consulta sobre directrices exógenas");
-        const cuerpo = encodeURIComponent("No encontré mi pregunta en el chat. Por favor, ayúdenme con esta consulta.");
-        const para = "walter.castro@ecopetrol.com.co,adalbert.palacios@ecopetrol.com.co";
-        const cc = "sandra.bulla@ecopetrol.com.co,diana.espinosa@ecopetrol.com.co,jennyca.rodriguez@ecopetrol.com.co";
-        window.location.href = `mailto:${para}?cc=${cc}&subject=${asunto}&body=${cuerpo}`;
-    });
-});
-</script>
 </body>
 </html>
